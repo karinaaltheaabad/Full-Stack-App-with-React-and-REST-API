@@ -11,7 +11,7 @@ router.get('/courses', asyncHandler(async (req, res) => {
             {
                 model: User,
                 attributes: {
-                    exclude: ['password', 'createdAt', 'updatedAt']
+                    exclude: ['createdAt', 'updatedAt']
                 }  
             },
         ],
@@ -30,7 +30,7 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
                 {
                     model: User,
                     attributes: {
-                        exclude: ['password', 'createdAt', 'updatedAt']
+                        exclude: ['createdAt', 'updatedAt']
                     } 
                 },
             ],

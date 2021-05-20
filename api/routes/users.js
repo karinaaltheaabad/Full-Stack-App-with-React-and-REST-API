@@ -9,7 +9,7 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
     let authenticatedUser = await User.findOne({
         where: {id: user.id},
         attributes: {
-            exclude: ['password','createdAt', 'updatedAt']
+            exclude: ['createdAt', 'updatedAt']
         }
     });
     res.status(200).json(authenticatedUser);
