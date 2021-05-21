@@ -5,8 +5,8 @@ import Form from './Form';
 class UpdateCourse extends Component {
 
     state = {
-        courseTitle: '',
-        courseDescription: '',
+        title: '',
+        description: '',
         estimatedTime: '',
         materialsNeeded: '',
         errors: [],
@@ -16,8 +16,8 @@ class UpdateCourse extends Component {
         this.props.context.data.getCourse(this.props.match.params.id)
             .then((response) => {
                 this.setState({
-                    courseTitle: response.title,
-                    courseDescription: response.description, 
+                    title: response.title,
+                    description: response.description, 
                     estimatedTime: response.estimatedTime,
                     materialsNeeded: response.materialsNeeded
                 })
@@ -26,8 +26,8 @@ class UpdateCourse extends Component {
 
     render() {
         const {
-            courseTitle,
-            courseDescription,
+            title,
+            description,
             estimatedTime,
             materialsNeeded,
             errors,
@@ -35,7 +35,6 @@ class UpdateCourse extends Component {
         
         return (
             <main>
-                {console.log(this.props)}
                 <div className="wrap">
                     <h2>Update Course</h2>
                     <div className="main--flex">
@@ -46,19 +45,19 @@ class UpdateCourse extends Component {
                             submitButtonText="Update Course"
                             elements={() => ( 
                                 <React.Fragment>
-                                    <label htmlFor="courseTitle">Course Title</label>
+                                    <label htmlFor="title">Course Title</label>
                                     <input 
-                                    id="courseTitle" 
-                                    name="courseTitle" 
+                                    id="title" 
+                                    name="title" 
                                     type="text"
-                                    value={courseTitle} 
+                                    value={title} 
                                     onChange={this.change} />
-                                    <label htmlFor="courseDescription">Course Description</label>
+                                    <label htmlFor="description">Course Description</label>
                                     <textarea 
-                                    id="courseDescription" 
-                                    name="courseDescription" 
+                                    id="description" 
+                                    name="description" 
                                     type="text"
-                                    value={courseDescription} 
+                                    value={description} 
                                     onChange={this.change} />
                                 </React.Fragment>
                         )} />
@@ -98,30 +97,34 @@ class UpdateCourse extends Component {
     submit = () => {
         //destructure context prop from this.props
         const { context } = this.props; 
+        const { emailAddress } = context.authenticatedUser;
+        const { password } = context.authenticatedUser;
+        const id = this.props.match.params.id; 
 
         //unpack properties from the state object (this.state) into distinct variables
         const {
-            courseTitle, 
-            courseDescription, 
+            title, 
+            description, 
             estimatedTime,
             materialsNeeded,
         } = this.state; 
 
         //new course payload that will be passed to createUser() method
         const course = {
-            courseTitle, 
-            courseDescription, 
+            title, 
+            description, 
             estimatedTime,
             materialsNeeded,
         };
 
         //creates a new course
-        context.data.updateCourse(course)
+        context.data.updateCourse(id, course, emailAddress, password)
             .then( errors => {
                 if (errors.length) {
                     this.setState({ errors })
                 } else {
-                    console.log(`${courseTitle} is successfully created!`);
+                    console.log(`${title} is successfully updated!`);
+                    this.props.history.push(`courses/${id}`)
                 }
             })
             .catch( err => {

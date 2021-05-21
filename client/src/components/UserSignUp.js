@@ -98,22 +98,21 @@ class UserSignUp extends Component {
             password,
         };
 
-        //creates a new user
         context.data.createUser(user)
             .then( errors => {
                 if (errors.length) {
-                    this.setState({ errors })
+                  this.setState({ errors });
                 } else {
-                    context.actions.signIn(emailAddress, password)
-                        .then(() => {
-                            this.props.history.push('/');
-                        })
+                  context.actions.signIn(emailAddress, password)
+                    .then(() => {
+                      this.props.history.push('/');    
+                    });
                 }
-            })
-            .catch( err => {
+              })
+              .catch((err) => {
                 console.log(err);
                 this.props.history.push('/error');
-            })
+              });
     } 
     
     cancel = () => {

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, {useState, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 const CourseDetail = ({ context }) => {
     
     const { id } = useParams();
+    const history = useHistory();
     const [course, setCourse] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -16,14 +18,39 @@ const CourseDetail = ({ context }) => {
             .finally(() => setIsLoading(false));
     }, [context.data, id])
 
+    const deleteCourse = useCallback(() => {
+        const { emailAddress } = context.authenticatedUser;
+        const { password } = context.authenticatedUser;
+
+        context.data.deleteCourse(id, course, emailAddress, password)
+            .then(() => {
+                console.log(`${course.title} is successfully deleted!`);
+                history.push('/');
+            })
+            .catch( err => {
+                console.log(err);
+                history.push('/error')
+            })
+    }) 
+
+    
+
     return (
         <main>
             <div className="actions--bar">
-                <div className="wrap">
-                    <Link to={`/courses/${id}/update`} className="button">Update Course</Link>
-                    <Link to='/' className="button">Delete Course</Link>
-                    <Link to='/' className="button button-secondary">Return to List</Link>
-                </div>
+                    {
+                        isLoading 
+                        ? <p>Loading...</p>
+                        :   context.authenticatedUser && (context.authenticatedUser.id == course.User.id)
+                            ?   <div className="wrap"> 
+                                    <Link to={`/courses/${id}/update`} className="button">Update Course</Link>
+                                    <button onClick={deleteCourse} className="button">Delete Course</button>
+                                    <Link to='/' className="button button-secondary">Return to List</Link>
+                                </div>
+                            :   <div className="wrap"> 
+                                    <Link to='/' className="button button-secondary">Return to List</Link>
+                                </div>
+                    }
             </div>
             
             <div className="wrap">
@@ -37,7 +64,7 @@ const CourseDetail = ({ context }) => {
                                 <h3 className="course--detail--title">Course</h3>
                                 <h4 className="course--name">{course.title}</h4>
                                 <p>By {course.User.firstName} {course.User.lastName}</p>
-                                <p>{course.description}</p>
+                                <ReactMarkdown>{course.description}</ReactMarkdown>
                             </div>
                             <div>
                                 <h3 className="course--detail--title">Estimated Time</h3>
@@ -51,7 +78,7 @@ const CourseDetail = ({ context }) => {
                                             course.materialsNeeded.split('*').map((material,i) => {
                                                 if (material !== '') {
                                                     return(
-                                                        <li key={i}>{material}</li>
+                                                    <li key={i}><ReactMarkdown>{material}</ReactMarkdown></li>
                                                     )
                                                 } 
                                             })
